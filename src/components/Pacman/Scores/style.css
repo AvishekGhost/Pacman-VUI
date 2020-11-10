@@ -1,0 +1,12 @@
+.pacman-scores {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: calc(12px * 3.5);
+	color: white;
+	font-family: Hack, monospace;
+}

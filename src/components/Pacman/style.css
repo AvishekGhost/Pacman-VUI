@@ -1,0 +1,8 @@
+body {
+	margin: 0;
+}
+
+.pacman {
+	position: relative;
+	width: fit-content;
+}
