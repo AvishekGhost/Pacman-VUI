@@ -1,0 +1,7 @@
+{
+  "name": "PacmanVUI",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
