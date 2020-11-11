@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { IonApp } from "@ionic/react";
+import React, { useState, useEffect } from "react";
+import { IonApp, isPlatform } from "@ionic/react";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -37,11 +37,13 @@ import MicOffIcon from "@material-ui/icons/MicOff";
 
 import Pacman from "./components/Pacman";
 
-import { useSpeechRecognition } from "react-speech-kit";
+import { SpeechRecognition as speechRecognitionMobile } from "@ionic-native/speech-recognition";
 
-import { SpeechRecognition } from "@ionic-native/speech-recognition";
+import { AndroidFullScreen } from "@ionic-native/android-full-screen";
 
-// const speechRecognition = SpeechRecognition();
+import SpeechRecognition, {
+	useSpeechRecognition,
+} from "react-speech-recognition";
 
 const theme = createMuiTheme({
 	palette: {
@@ -69,21 +71,45 @@ const useStyles = makeStyles((theme) => ({
 
 const App = () => {
 	const classes = useStyles();
+
 	const [direction, setDirection] = useState(null);
-	const [transcript, setTranscript] = useState("");
+	const [voiceInput, setVoiceInput] = useState("");
 	const [inputType, setInputType] = useState(false);
 	const [isListening, setIsListening] = useState(false);
+	const { transcript, resetTranscript } = useSpeechRecognition();
 
-	const { listen, listening, stop } = useSpeechRecognition({
-		onResult: (result) => {
-			setTranscript(result);
-		},
-	});
+	const [resetGame, setResetGame] = useState(false);
+
+	useEffect(() => {
+		if (!isPlatform("desktop") && !isPlatform("mobileweb")) {
+			AndroidFullScreen.isImmersiveModeSupported()
+				.then(() => AndroidFullScreen.immersiveMode())
+				.catch((err) => console.log(err));
+
+			speechRecognitionMobile.hasPermission().then((hasPermission) => {
+				if (!hasPermission) {
+					speechRecognitionMobile.requestPermission().then(
+						() => console.log("Granted"),
+						() => console.log("Denied")
+					);
+				}
+			});
+		}
+	}, []);
+
+	useEffect(() => {
+		setVoiceInput(transcript);
+	}, [transcript]);
 
 	let gridSize = window.innerWidth;
 
 	if (gridSize > 583) {
 		gridSize = 583;
+	}
+
+	if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
+		console.log(resetTranscript);
+		return null;
 	}
 
 	return (
@@ -93,7 +119,8 @@ const App = () => {
 				<div className={classes.appContainer}>
 					<Pacman
 						gridSize={gridSize / 28}
-						input={inputType ? transcript : direction}
+						input={inputType ? voiceInput : direction}
+						resetGame={resetGame}
 					/>
 					<Paper elevation={3} className={classes.inputContainer}>
 						<IconButton
@@ -131,17 +158,13 @@ const App = () => {
 						<IconButton
 							aria-label="delete"
 							className={classes.margin}
-							onClick={() => {
-								if (!isListening) {
-									setIsListening(true);
-									SpeechRecognition.startListening().subscribe(
-										(matches) => console.log(matches),
-										(onerror) => console.log("error:", onerror)
-									);
-								} else {
-									setIsListening(false);
-									SpeechRecognition.stopListening();
-								}
+							onMouseDown={() => {
+								setIsListening(true);
+								SpeechRecognition.startListening();
+							}}
+							onMouseUp={() => {
+								SpeechRecognition.stopListening();
+								setIsListening(false);
 							}}
 						>
 							{!isListening ? (
@@ -150,6 +173,7 @@ const App = () => {
 								<MicOffIcon fontSize="inherit" />
 							)}
 						</IconButton>
+
 						<Button
 							variant="contained"
 							color="primary"
@@ -158,7 +182,17 @@ const App = () => {
 						>
 							Change Input ({inputType ? "voice" : "btn"})
 						</Button>
-						<Typography variant="body2">{transcript}</Typography>
+
+						<Button
+							variant="contained"
+							color="secondary"
+							component="span"
+							onClick={() => setResetGame(!resetGame)}
+						>
+							Reset
+						</Button>
+
+						<Typography variant="body2">{voiceInput}</Typography>
 					</Paper>
 				</div>
 			</IonApp>

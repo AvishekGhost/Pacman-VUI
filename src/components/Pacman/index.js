@@ -56,7 +56,9 @@ export default class Pacman extends Component {
 					return this.changeDirection(SOUTH);
 				}
 			}
-			console.log(this.props.input);
+		}
+		if (prevProp.resetGame !== this.props.resetGame) {
+			this.setState(getInitialState());
 		}
 	}
 
