@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { IonApp, isPlatform } from "@ionic/react";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -19,39 +18,33 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
 
-import { CssBaseline } from "@material-ui/core";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-
-import { IconButton, Button } from "@material-ui/core";
-
-import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
-import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
-import MicIcon from "@material-ui/icons/Mic";
-import Typography from "@material-ui/core/Typography";
-import MicOffIcon from "@material-ui/icons/MicOff";
-
-import Pacman from "./components/Pacman";
-
-import { SpeechRecognition as speechRecognitionMobile } from "@ionic-native/speech-recognition";
+import {
+	IonApp,
+	isPlatform,
+	IonContent,
+	IonButton,
+	IonIcon,
+	IonText,
+} from "@ionic/react";
 
 import { AndroidFullScreen } from "@ionic-native/android-full-screen";
+import {
+	mic,
+	micOff,
+	arrowForward,
+	arrowDown,
+	arrowBack,
+	arrowUp,
+} from "ionicons/icons";
 
 import SpeechRecognition, {
 	useSpeechRecognition,
 } from "react-speech-recognition";
 
-const theme = createMuiTheme({
-	palette: {
-		type: "dark",
-	},
-});
+import Pacman from "./components/Pacman";
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
 	appContainer: {
 		display: "flex",
 		justifyContent: "center",
@@ -67,11 +60,9 @@ const useStyles = makeStyles((theme) => ({
 	micContainer: {
 		marginTop: 10,
 	},
-}));
+};
 
 const App = () => {
-	const classes = useStyles();
-
 	const [direction, setDirection] = useState(null);
 	const [voiceInput, setVoiceInput] = useState("");
 	const [inputType, setInputType] = useState(false);
@@ -85,15 +76,6 @@ const App = () => {
 			AndroidFullScreen.isImmersiveModeSupported()
 				.then(() => AndroidFullScreen.immersiveMode())
 				.catch((err) => console.log(err));
-
-			speechRecognitionMobile.hasPermission().then((hasPermission) => {
-				if (!hasPermission) {
-					speechRecognitionMobile.requestPermission().then(
-						() => console.log("Granted"),
-						() => console.log("Denied")
-					);
-				}
-			});
 		}
 	}, []);
 
@@ -113,51 +95,32 @@ const App = () => {
 	}
 
 	return (
-		<ThemeProvider theme={theme}>
-			<IonApp>
-				<CssBaseline />
-				<div className={classes.appContainer}>
+		<IonApp>
+			<IonContent>
+				<div style={styles.appContainer}>
 					<Pacman
 						gridSize={gridSize / 28}
 						input={inputType ? voiceInput : direction}
 						resetGame={resetGame}
 					/>
-					<Paper elevation={3} className={classes.inputContainer}>
-						<IconButton
-							aria-label="delete"
-							className={classes.margin}
-							onClick={() => setDirection("up")}
-						>
-							<ArrowUpwardIcon fontSize="inherit" />
-						</IconButton>
+					<div elevation={3} style={styles.inputContainer}>
+						<IonButton onClick={() => setDirection("up")}>
+							<IonIcon icon={arrowUp} />
+						</IonButton>
 						<div>
-							<IconButton
-								aria-label="delete"
-								className={classes.margin}
-								onClick={() => setDirection("left")}
-							>
-								<ArrowBackIcon fontSize="inherit" />
-							</IconButton>
-							<IconButton
-								aria-label="delete"
-								className={classes.margin}
-								onClick={() => setDirection("down")}
-							>
-								<ArrowDownwardIcon fontSize="inherit" />
-							</IconButton>
-							<IconButton
-								aria-label="delete"
-								className={classes.margin}
-								onClick={() => setDirection("right")}
-							>
-								<ArrowForwardIcon fontSize="inherit" />
-							</IconButton>
+							<IonButton onClick={() => setDirection("left")}>
+								<IonIcon icon={arrowBack} />
+							</IonButton>
+							<IonButton onClick={() => setDirection("down")}>
+								<IonIcon icon={arrowDown} />
+							</IonButton>
+							<IonButton onClick={() => setDirection("right")}>
+								<IonIcon icon={arrowForward} />
+							</IonButton>
 						</div>
-					</Paper>
-					<Paper elevation={3} className={classes.micContainer}>
-						<IconButton
-							aria-label="delete"
-							className={classes.margin}
+					</div>
+					<div elevation={3} style={styles.micContainer}>
+						<IonButton
 							onMouseDown={() => {
 								setIsListening(true);
 								SpeechRecognition.startListening();
@@ -168,35 +131,34 @@ const App = () => {
 							}}
 						>
 							{!isListening ? (
-								<MicIcon fontSize="inherit" />
+								<IonIcon icon={mic} />
 							) : (
-								<MicOffIcon fontSize="inherit" />
+								<IonIcon icon={micOff} />
 							)}
-						</IconButton>
+						</IonButton>
 
-						<Button
+						<IonButton
 							variant="contained"
 							color="primary"
 							component="span"
 							onClick={() => setInputType(!inputType)}
 						>
 							Change Input ({inputType ? "voice" : "btn"})
-						</Button>
+						</IonButton>
 
-						<Button
+						<IonButton
 							variant="contained"
-							color="secondary"
-							component="span"
+							color="danger"
 							onClick={() => setResetGame(!resetGame)}
 						>
 							Reset
-						</Button>
+						</IonButton>
 
-						<Typography variant="body2">{voiceInput}</Typography>
-					</Paper>
+						<IonText>{voiceInput}</IonText>
+					</div>
 				</div>
-			</IonApp>
-		</ThemeProvider>
+			</IonContent>
+		</IonApp>
 	);
 };
 
