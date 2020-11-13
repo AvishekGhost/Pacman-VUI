@@ -59,6 +59,8 @@ export default class Pacman extends Component {
 		}
 		if (prevProp.resetGame !== this.props.resetGame) {
 			this.setState(getInitialState());
+			this.timers.start = null;
+			this.timers.animate = null;
 		}
 	}
 

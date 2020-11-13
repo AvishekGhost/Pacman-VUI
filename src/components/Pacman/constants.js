@@ -10,7 +10,8 @@ export const BOARD_HEIGHT = 36;
 
 export const PLAYER_RADIUS = 0.8;
 
-export const WALL_COLOUR = "#06f";
+export const WALL_COLOUR = "#1e2023";
+export const WALL_COLOUR_DARK = "#eb445a";
 
 export const EATING_TIME_SECONDS = 5;
 

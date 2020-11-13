@@ -13,7 +13,13 @@ export default function Board(props) {
 	return (
 		<div className="pacman-board">
 			<svg width={boardWidth} height={boardHeight}>
-				<rect x={0} y={0} width={boardWidth} height={boardHeight} fill="#000" />
+				<rect
+					x={0}
+					y={0}
+					width={boardWidth}
+					height={boardHeight}
+					fill="#222428"
+				/>
 				<Walls {...props} />
 			</svg>
 		</div>

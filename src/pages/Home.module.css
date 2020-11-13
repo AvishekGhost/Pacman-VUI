@@ -1,0 +1,22 @@
+.root {
+	background-color: #222428;
+}
+
+.appContainer {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	background-color: #222428;
+}
+
+.inputContainer {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.micContainer {
+	margin-top: 10;
+}
